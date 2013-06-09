@@ -2,71 +2,14 @@
 <head>
 <title>PAD TESTE</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<script type="text/javascript" src="http://192.168.1.19:8080/socket.io/socket.io.js"></script>
 <script type="text/javascript" src="jquery.js"></script>
+<!-- <script type="text/javascript" src="jquery_mobile.js"></script> -->
+<script type="text/javascript" src="config.js"></script>
+<script type="text/javascript" src="main.js"></script>
 <script type="text/javascript">
-	var socket = io.connect("http://192.168.1.19:8080");
-	
-	var createCanvas = function ()
-	{
-		var canvas = {};
-		canvas.node = document.createElement("canvas");
-		canvas.context = canvas.node.getContext("2d");
-		canvas.node.width = 320;
-		canvas.node.height = 440;
-		document.body.appendChild(canvas.node);
-		
-		return canvas;
-	};
-	
-	var init = function()
-	{
-		var canvas	= createCanvas();
-		var ctx		= canvas.context;
-		
-		ctx.fillCircle = function(x, y)
-		{
-			this.fillStyle = '#000000';
-			this.beginPath();
-			this.moveTo(x,y);
-			this.arc(x,y,10,0,Math.PI*2,false);
-			this.fill();
-		}
-		
-		var startDraw = function(e) {
-			if(canvas.isDrawing)
-			{
-				var x = null;
-				var y = null;
-				if(e.targetTouches) {
-					x = e.targetTouches[0].pageX - this.offsetLeft;
-					y = e.targetTouches[0].pageY - this.offsetTop;
-				} else {
-					x = e.pageX - this.offsetLeft;
-					y = e.pageY - this.offsetTop;
-				}
-				socket.emit("setClick", {posX: x, posY: y});
-				ctx.fillCircle(x, y);
-			}
-		}
-
-		canvas.node.onmousemove = startDraw;
-		
-		canvas.node.addEventListener('touchmove', startDraw, false);
-
-		var drawing = function(e){
-			canvas.isDrawing = true;
-		};
-
-		var notDrawing = function(e){
-			canvas.isDrawing = false;
-		};
-
-		canvas.node.onmousedown = drawing;
-		canvas.node.onmouseup = notDrawing;
-		canvas.node.addEventListener('touchstart', drawing, false);
-		canvas.node.addEventListener('touchend', notDrawing, false);
-	}
+	$.getScript(__CONFIG__.socketIOUrl, function() {
+		socketConnect();
+	});
 </script>
 <style>
 body{
