@@ -107,6 +107,10 @@ io.sockets.on("connection", function(socket){
 		word: word
 	});
 
+	if(socketsList.length > 1) {
+		io.sockets.emit('newUser', 'ready');
+	}
+
 	socket.on('setNewArtist', function(){
 		var id = pickNextArtist();
 		io.sockets.emit('newArtist', id);
@@ -139,7 +143,7 @@ io.sockets.on("connection", function(socket){
 			var newWord = pickWord();
 			var mixed = mixLetters(newWord);
 			io.sockets.emit("wordGuessed", {newArtist: artist, letters: mixed});
-			io.sockes.manager.connected[artist].emit('artistWord', newWord);
+			io.sockets.manager.connected[artist].emit('artistWord', newWord);
 		}
 		var idx = socketsList.indexOf(socket.id);
 		if(idx >= 0) {
