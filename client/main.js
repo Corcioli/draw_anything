@@ -40,6 +40,12 @@ var socketConnect = function() {
 			startMode("design");
 	});
 
+	socket.on("waitForUser", function (data)
+	{
+		gamePlay = "wait";
+		startMode("wait");
+	});
+
 	socket.on("wordGuessed", function (data)
 	{
 		artist = data.newArtist;
@@ -58,26 +64,29 @@ var socketConnect = function() {
 		{
 			startMode("reply");
 		}
-		
+
 	});
 
 	socket.on("artistWord", function (data)
 	{
-		startMode("design");
 		console.log("user="+user);
 		console.log("artist="+artist);
 		console.log("nova palavra: " + data)
 		word = data;
-		if (artist == user)
+		if (gamePlay != "wait")
 		{
-			guess = [];
-			document.getElementById("design_box").innerHTML = "Desenhe a palavra: " + word;
-		}
-		else
-		{
-			guess = word;
-			typed = [];
-			startTypeButtons();
+			startMode("design");
+			if (artist == user)
+			{
+				guess = [];
+				document.getElementById("design_box").innerHTML = "Desenhe a palavra: " + word;
+			}
+			else
+			{
+				guess = word;
+				typed = [];
+				startTypeButtons();
+			}
 		}
 	});
 };
@@ -102,6 +111,8 @@ var startModeWait = function ()
 
 var startModeDesign = function ()
 {
+	if (word.length > 0)
+		document.getElementById("design_box").innerHTML = "Desenhe a palavra: " + word;
 	init();
 };
 
@@ -162,7 +173,6 @@ var doType = function (charTyped)
 
 var startModeReply = function ()
 {
-	document.getElementById("reply_typed").innerHTML = "";
 	document.getElementById("reply_box").innerHTML = "";
 	init();
 };
