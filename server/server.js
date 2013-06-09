@@ -98,7 +98,8 @@ io.sockets.on("connection", function(socket){
 
 	socket.emit('handshake', {
 		id: socket.id,
-		artist: artist
+		artist: artist,
+		status: (socketsList.length == 1) ? 'waiting' : 'ready'
 	});
 
 	socket.on('setNewArtist', function(){
@@ -116,17 +117,14 @@ io.sockets.on("connection", function(socket){
 
 	socket.on("checkWord", function(data){
 		var done = checkWord(data);
-		var newWord = pickWord();
-		var mixed = mixLetters(newWord);
-		console.dir(mixed);
-		// if(done) {
-		// 	var newWord = pickWord();
-		// 	var mixed = mixLetters(newWord);
-		// 	io.sockets.emit("wordGuessed", {newArtist: socket.id, letters: mixed});
-		// 	socket.emit('artistWord', newWord);
-		// 	artist = socket.id;
-		// } else {
-		// 	io.sockets.emit("wordGuessed", false);
-		// }
+		if(done) {
+			var newWord = pickWord();
+			var mixed = mixLetters(newWord);
+			io.sockets.emit("wordGuessed", {newArtist: socket.id, letters: mixed});
+			socket.emit('artistWord', newWord);
+			artist = socket.id;
+		} else {
+			io.sockets.emit("wordGuessed", false);
+		}
 	});
 });
