@@ -173,6 +173,7 @@ var doType = function (charTyped)
 
 var startModeReply = function ()
 {
+	typed = [];
 	document.getElementById("reply_typed").innerHTML = "";
 	document.getElementById("reply_box").innerHTML = "";
 	init();
