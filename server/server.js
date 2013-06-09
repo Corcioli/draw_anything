@@ -121,8 +121,6 @@ io.sockets.on("connection", function(socket){
 			io.sockets.emit("wordGuessed", {newArtist: socket.id, wordLength: newWord.length, letters: mixed});
 			socket.emit('artistWord', newWord);
 			artist = socket.id;
-		} else {
-			io.sockets.emit("wordGuessed", false);
 		}
 	});
 
