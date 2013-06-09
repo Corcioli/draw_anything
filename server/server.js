@@ -116,11 +116,11 @@ io.sockets.on("connection", function(socket){
 	socket.on("checkWord", function(data){
 		var done = checkWord(data);
 		if(done) {
+			artist = socket.id;
 			var newWord = pickWord();
 			var mixed = mixLetters(newWord);
-			io.sockets.emit("wordGuessed", {newArtist: socket.id, wordLength: newWord.length, letters: mixed});
+			io.sockets.emit("wordGuessed", {newArtist: artist, wordLength: newWord.length, letters: mixed});
 			socket.emit('artistWord', newWord);
-			artist = socket.id;
 		}
 	});
 
@@ -139,9 +139,8 @@ io.sockets.on("connection", function(socket){
 				io.sockets.sockets[artist].emit('artistWord', newWord);
 			}
 		} else if (artist == socket.id && socketsList.length == 1) {
-			var newWord = pickWord();
-			artist = socketsList[0];
 			io.sockets.sockets[artist].emit('artistWord', newWord);
+			io.sockets.sockets[artist].emit('waitForUser', 'waiting');
 		} else if(artist != socket.id && socketsList.length == 1) {
 			io.sockets.sockets[artist].emit('waitForUser', 'waiting');
 		}
