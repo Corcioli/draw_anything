@@ -106,7 +106,9 @@ io.sockets.on("connection", function(socket){
 	}
 
 	socket.on("setClick", function(data){
-		io.sockets.emit("pushClick", data);
+		if(artist == socket.id) {
+			io.sockets.emit("pushClick", data);
+		}
 	});
 
 	socket.on("setGameInfo", function(data){
