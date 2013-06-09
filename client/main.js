@@ -9,6 +9,8 @@ var guess  = [];
 var guess_len = 0;
 var typed  = [];
 
+
+
 var checkMode = function ()
 {
 	console.log("user="+user);
@@ -22,6 +24,11 @@ var checkMode = function ()
 		startMode("reply");
 	}
 }
+
+var startClear = function ()
+{
+  	socket.emit("eraseScreen");
+};
 
 var socketConnect = function() {
 	socket = io.connect(__CONFIG__.socketIOHost);
@@ -48,6 +55,11 @@ var socketConnect = function() {
 		startMode("wait");
 	});
 
+	socket.on("eraseScreen", function ()
+	{
+		init();
+	});
+	
 	socket.on("wordGuessed", function (data)
 	{
 		artist = data.newArtist;
@@ -92,6 +104,7 @@ var socketConnect = function() {
 			}
 		}
 	});
+
 };
 
 var createCanvas = function () {
@@ -272,3 +285,6 @@ var init = function() {
 			doDraw(data);
 	});
 };
+
+if (screen.mozLockOrientation)
+	screen.mozLockOrientation("portrait");

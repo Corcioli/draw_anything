@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Draw Something</title>
+<title>Draw Anything</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <script type="text/javascript" src="jquery.js"></script>
 <!-- <script type="text/javascript" src="jquery_mobile.js"></script> -->
@@ -155,6 +155,11 @@ body
 	color: black;
 }
 
+#borracha
+{
+	float: right;
+	margin: 10px;
+}
 </style>
 </head>
 
@@ -173,6 +178,7 @@ body
 </div>
 
 <div id="design" style="display:none">
+	<img src="borracha.png" id="borracha" onclick="startClear();">
 	<div id="design_map"></div>
 	<div id="design_box"></div>
 </div>
