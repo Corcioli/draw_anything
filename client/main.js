@@ -48,16 +48,24 @@ var socketConnect = function() {
 		console.log("user="+user);
 		console.log("artist="+artist);
 		console.log("word="+word);
-		checkMode();
 		if (artist!=user)
 		{
+			startMode("reply");
 			guess = word;
 			startTypeButtons();
 		}
+		else
+		{
+			startMode("reply");
+		}
+		
 	});
 
 	socket.on("artistWord", function (data)
 	{
+		startMode("design");
+		console.log("user="+user);
+		console.log("artist="+artist);
 		console.log("nova palavra: " + data)
 		word = data;
 		if (artist == user)
@@ -79,7 +87,7 @@ var createCanvas = function () {
 	canvas.node = document.createElement("canvas");
 	canvas.context = canvas.node.getContext("2d");
 	canvas.node.width = 320;
-	canvas.node.height = 300;
+	canvas.node.height = 290;
 	document.getElementById(gamePlay + "_map").innerHTML = "";
 	document.getElementById(gamePlay + "_map").appendChild(canvas.node);
 
@@ -114,19 +122,47 @@ var startTypeButtons = function ()
 	}
 };
 
+var startTypedButtons = function ()
+{
+	document.getElementById("reply_typed").innerHTML = "";
+	for (var q=0;q<typed.length;q++)
+	{
+		bt = document.createElement("a");
+		bt.id = q;
+		bt.onclick = function ()
+		{
+			doUntype(this.id);
+		};
+		bt.innerHTML = typed[q];
+		bt.className = "guessButton";
+		document.getElementById("reply_typed").appendChild(bt);
+	}
+};
+
+var doUntype = function (charTyped)
+{
+	console.log("untyped="+charTyped);
+	guess.push(typed[charTyped]);
+	typed.splice(charTyped,1);
+
+	startTypedButtons();
+	startTypeButtons();
+};
+
 var doType = function (charTyped)
 {
-	console.log("typed="+charTyped);
-	typed[typed.length] = guess[charTyped];
+	console.log("typed="+charTyped+", "+guess[charTyped]);
+	typed.push(guess[charTyped]);
 	guess.splice(charTyped,1);
 
-	document.getElementById("reply_typed").innerHTML = typed.join("");
-
+	startTypedButtons();
 	startTypeButtons();
+	socket.emit("checkWord", typed.join(""));
 };
 
 var startModeReply = function ()
 {
+	document.getElementById("reply_typed").innerHTML = "";
 	document.getElementById("reply_box").innerHTML = "";
 	init();
 };
