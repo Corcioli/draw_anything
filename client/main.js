@@ -6,6 +6,7 @@ var user = "";
 var artist = "";
 var word = "";
 var guess  = [];
+var guess_len = 0;
 var typed  = [];
 
 var checkMode = function ()
@@ -58,6 +59,7 @@ var socketConnect = function() {
 		{
 			startMode("reply");
 			guess = word;
+			guess_len = data.wordLength;
 			startTypeButtons();
 		}
 		else
@@ -168,7 +170,10 @@ var doType = function (charTyped)
 
 	startTypedButtons();
 	startTypeButtons();
-	socket.emit("checkWord", typed.join(""));
+
+	var astr = typed.join("");
+	if (astr.length == guess_len)
+		socket.emit("checkWord", astr);
 };
 
 var startModeReply = function ()
