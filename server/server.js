@@ -64,12 +64,12 @@ var mixLetters = function(word) {
 	for(var idx = 0; idx < word.length; idx++) {
 		lettersArr.push(word.substr(idx, 1));
 	}
-	lettersArr = addChat(lettersArr);
+	lettersArr = addChar(lettersArr);
 	var mixed = shuffle(lettersArr);
 	return mixed;
 };
 
-var addChat = function(mixed) {
+var addChar = function(mixed) {
 	var numToAdd = 10 - mixed.length;
 	var alphabetLen = alphabet.length;
 	for(var idx = 0; idx < numToAdd; idx++) {
@@ -90,16 +90,21 @@ var checkWord = function(word) {
 
 io.sockets.on("connection", function(socket){
 	socketsList.push(socket.id);
+	var word = words[currentWord];
 	if(first) {
 		first = false;
 		artist = socket.id;
 		artistIndex = 0;
+	} else {
+		word = addChar(word);
+		word = mixLetters(word);
 	}
 
 	socket.emit('handshake', {
 		id: socket.id,
 		artist: artist,
-		status: (socketsList.length == 1) ? 'waiting' : 'ready'
+		status: (socketsList.length == 1) ? 'waiting' : 'ready',
+		word: word
 	});
 
 	socket.on('setNewArtist', function(){
@@ -125,6 +130,20 @@ io.sockets.on("connection", function(socket){
 			artist = socket.id;
 		} else {
 			io.sockets.emit("wordGuessed", false);
+		}
+	});
+
+	socket.on('disconnect', function () {
+		if(artist == socket.id) {
+			artist = pickNextArtist();
+			var newWord = pickWord();
+			var mixed = mixLetters(newWord);
+			io.sockets.emit("wordGuessed", {newArtist: artist, letters: mixed});
+			io.sockes.manager.connected[artist].emit('artistWord', newWord);
+		}
+		var idx = socketsList.indexOf(socket.id);
+		if(idx >= 0) {
+			socketsList.splice(idx, 1);
 		}
 	});
 });
