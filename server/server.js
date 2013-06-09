@@ -134,6 +134,10 @@ io.sockets.on("connection", function(socket){
 		io.sockets.emit("pushGameInfo", data);
 	});
 
+	socket.on("eraseScreen", function() {
+		io.sockets.emit("eraseScreen", null);
+	});
+
 	socket.on("checkWord", function(data){
 		var done = checkWord(data);
 		if(done) {
