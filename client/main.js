@@ -9,6 +9,8 @@ var guess  = [];
 var guess_len = 0;
 var typed  = [];
 
+
+
 var checkMode = function ()
 {
 	console.log("user="+user);
@@ -23,8 +25,14 @@ var checkMode = function ()
 	}
 }
 
+var startClear = function ()
+{
+  	socket.emit("eraseScreen");
+};
+
 var socketConnect = function() {
 	socket = io.connect(__CONFIG__.socketIOHost);
+
 	socket.on("handshake", function (data)
 	{
 		user   = data.id;
@@ -47,6 +55,11 @@ var socketConnect = function() {
 		startMode("wait");
 	});
 
+	socket.on("eraseScreen", function ()
+	{
+		init();
+	});
+	
 	socket.on("wordGuessed", function (data)
 	{
 		artist = data.newArtist;
@@ -81,7 +94,7 @@ var socketConnect = function() {
 			if (artist == user)
 			{
 				guess = [];
-				document.getElementById("design_box").innerHTML = "Desenhe a palavra: " + word;
+				document.getElementById("design_box").innerHTML = "Palavra: <b>" + word + "</b>";
 			}
 			else
 			{
@@ -91,6 +104,7 @@ var socketConnect = function() {
 			}
 		}
 	});
+
 };
 
 var createCanvas = function () {
@@ -114,7 +128,7 @@ var startModeWait = function ()
 var startModeDesign = function ()
 {
 	if (word.length > 0)
-		document.getElementById("design_box").innerHTML = "Desenhe a palavra: " + word;
+		document.getElementById("design_box").innerHTML = "Palavra: <b>" + word + "</b>";
 	init();
 };
 
@@ -188,13 +202,14 @@ var startModeReply = function ()
 var startMode = function (selectGamePlay)
 {
 	console.log("mode="+selectGamePlay);
+
 	document.getElementById("wait").style.display   = "none";
 	document.getElementById("design").style.display = "none";
 	document.getElementById("reply").style.display  = "none";
 
 	gamePlay = selectGamePlay;
 
-	document.getElementById(selectGamePlay).style.display = "";
+	document.getElementById(selectGamePlay).style.display  = "";
 
 	switch (selectGamePlay)
 	{
@@ -270,3 +285,6 @@ var init = function() {
 			doDraw(data);
 	});
 };
+
+if (screen.mozLockOrientation)
+	screen.mozLockOrientation("portrait");
