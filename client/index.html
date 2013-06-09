@@ -12,17 +12,103 @@
 	});
 </script>
 <style>
-body{
+body
+{
 margin:0;
 }
 
-#paper{
-margin:10px;
+#paper
+{
+	margin:10px;
+}
+
+#wait, #design, #reply
+{
+	width: 320px;
+	height: 420px;	
+}
+#wait 
+{
+	background-color: red;
+}
+#design 
+{
+	background-color: blue; 
+}
+#reply 
+{
+	background-color: green;
+}
+
+#wait h1
+{
+	font-family: arial;
+	font-size: 24px;
+	text-align: center;
+	padding-top: 100px;
+}
+
+#map
+{
+	width: 320px;
+	height: 300px;
+}
+
+#reply_box, #design_box
+{
+	width: 320px;
+	height: 120px;
+	background-color: gray;
+	overflow: hidden;
+}
+
+#reply_box
+{
+	height: 84px;
+}
+#reply_typed
+{
+	width: 320px;
+	background-color: purple;
+	height: 36px;
+	color: white;
+	font-size: 25px;
+}
+.guessButton
+{
+	float: left;
+	font-size: 25px;
+	padding: 10px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	margin-right: 20px;
+	margin: 2px;
+	text-align: center;
+	background-color: blue;
+	color: white;
 }
 </style>
 </head>
 
-<body onLoad="init();">
-<div id="map"></div>
+<body>
+<!--
+<input type="button" value="Wait" onclick="startMode('wait');"> 
+<input type="button" value="Design" onclick="startMode('design');"> 
+<input type="button" value="Reply" onclick="startMode('reply');"> 
+-->
+<div id="wait" style="display:none">
+	<h1>Aguardando oponente!</h1>
+</div>
+
+<div id="design" style="display:none">
+	<div id="design_map"></div>
+	<div id="design_box">Desenhando</div>
+</div>
+
+<div id="reply" style="display:none">
+	<div id="reply_map"></div>
+	<div id="reply_typed"></div>
+	<div id="reply_box"></div>
+</div>
 </body>
 </html>
