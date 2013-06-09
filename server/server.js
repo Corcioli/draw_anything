@@ -96,7 +96,6 @@ io.sockets.on("connection", function(socket){
 		artist = socket.id;
 		artistIndex = 0;
 	} else {
-		word = addChar(word);
 		word = mixLetters(word);
 	}
 
@@ -110,7 +109,6 @@ io.sockets.on("connection", function(socket){
 	if(socketsList.length > 1) {
 		io.sockets.emit('newUser', 'ready');
 	}
-
 	socket.on('setNewArtist', function(){
 		var id = pickNextArtist();
 		io.sockets.emit('newArtist', id);
@@ -138,16 +136,24 @@ io.sockets.on("connection", function(socket){
 	});
 
 	socket.on('disconnect', function () {
-		if(artist == socket.id) {
+		if(artist == socket.id && socketsList.length > 1) {
 			artist = pickNextArtist();
 			var newWord = pickWord();
 			var mixed = mixLetters(newWord);
 			io.sockets.emit("wordGuessed", {newArtist: artist, letters: mixed});
-			io.sockets.manager.connected[artist].emit('artistWord', newWord);
+			if(io.sockets.manager.connected[artist]) {
+				io.sockets.sockets[artist].emit('artistWord', newWord);
+			}
 		}
 		var idx = socketsList.indexOf(socket.id);
 		if(idx >= 0) {
 			socketsList.splice(idx, 1);
+		}
+		if(socketsList.length <= 0) {
+			first = true;
+			socketsList = [];
+			artist = null;
+			currentWord = 0;
 		}
 	});
 });
