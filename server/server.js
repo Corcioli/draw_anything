@@ -109,6 +109,7 @@ io.sockets.on("connection", function(socket){
 		first = false;
 		artist = socket.id;
 		artistIndex = 0;
+		words = shuffle(words);
 	}
 
 	socket.emit('handshake', {
@@ -175,6 +176,7 @@ io.sockets.on("connection", function(socket){
 		if(socketsList.length <= 0) {
 			first = true;
 			socketsList = [];
+			words = shuffle(words);
 			artist = null;
 			currentWord = 0;
 		}
