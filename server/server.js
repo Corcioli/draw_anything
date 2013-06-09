@@ -85,7 +85,7 @@ var mixLetters = function(word) {
 };
 
 var addChar = function(mixed) {
-	var numToAdd = 20 - mixed.length;
+	var numToAdd = 16 - mixed.length;
 	var alphabetLen = alphabet.length;
 	for(var idx = 0; idx < numToAdd; idx++) {
 		var rad = parseInt(Math.random() * alphabetLen);
