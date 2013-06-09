@@ -20,7 +20,26 @@ app.get('/', function (req, res) {
 var first = true;
 var socketsList = [];
 var artist = null;
-var words = ['david', 'corci', 'jackes'];
+var words = ['sorvete',
+		'caneca',
+		'firefox',
+		'televisor',
+		'celular',
+		'kiss',
+		'bala',
+		'vivo',
+		'café',
+		'super 15',
+		'tag',
+		'pistola',
+		'coração',
+		'mario',
+		'vampiro',
+		'maçã',
+		'oculos',
+		'sol',
+		'copo'
+		];
 var alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','x','z'];
 var currentWord = 0;
 
