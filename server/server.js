@@ -139,6 +139,8 @@ io.sockets.on("connection", function(socket){
 				io.sockets.sockets[artist].emit('artistWord', newWord);
 			}
 		} else if (artist == socket.id && socketsList.length == 1) {
+			var newWord = pickWord();
+			artist = socketsList[0];
 			io.sockets.sockets[artist].emit('artistWord', newWord);
 			io.sockets.sockets[artist].emit('waitForUser', 'waiting');
 		} else if(artist != socket.id && socketsList.length == 1) {
