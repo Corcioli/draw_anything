@@ -90,25 +90,25 @@ var checkWord = function(word) {
 
 io.sockets.on("connection", function(socket){
 	socketsList.push(socket.id);
-	var word = words[currentWord];
 	if(first) {
 		first = false;
 		artist = socket.id;
 		artistIndex = 0;
-	} else {
-		word = mixLetters(word);
 	}
 
 	socket.emit('handshake', {
 		id: socket.id,
 		artist: artist,
-		status: (socketsList.length == 1) ? 'waiting' : 'ready',
-		word: word
+		status: (socketsList.length == 1) ? 'waiting' : 'ready'
 	});
 
-	if(socketsList.length > 1) {
+	if(artist == socket.id) {
+		socket.emit('artistWord', words[currentWord]);
+	} else {
 		io.sockets.emit('newUser', 'ready');
+		socket.emit("wordGuessed", {newArtist: artist, letters: mixLetters(words[currentWord])});
 	}
+
 	socket.on('setNewArtist', function(){
 		var id = pickNextArtist();
 		io.sockets.emit('newArtist', id);
@@ -140,8 +140,8 @@ io.sockets.on("connection", function(socket){
 			artist = pickNextArtist();
 			var newWord = pickWord();
 			var mixed = mixLetters(newWord);
-			io.sockets.emit("wordGuessed", {newArtist: artist, letters: mixed});
 			if(io.sockets.manager.connected[artist]) {
+				io.sockets.emit("wordGuessed", {newArtist: artist, letters: mixed});
 				io.sockets.sockets[artist].emit('artistWord', newWord);
 			}
 		}
