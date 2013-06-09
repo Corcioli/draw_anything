@@ -17,24 +17,116 @@ app.get('/', function (req, res) {
 });
 
 /** SOCKETS **/
+var first = true;
+var socketsList = [];
+var artist = null;
+var words = ['david', 'corci', 'jackes'];
+var alphabet = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','x','z'];
+var currentWord = 0;
 
-var socketsMap = {};
+var pickNextArtist = function() {
+	var ret = null;
+
+	if(socketsList.length > 1) {
+		while(ret === null) {
+			if((artistIndex+1) >= socketsList.length) {
+				artistIndex = -1;
+			}
+			if(socketsList[artistIndex+1]) {
+				if(io.sockets.manager.connected[socketsList[artistIndex+1]]) {
+					artistIndex++;
+					ret = socketsList[artistIndex];
+				} else {
+					socketsList.splice(artistIndex+1, 1);
+				}
+			} else {
+				ret = 'empty';
+			}
+		}
+	} else {
+		ret = 'waiting';
+	}
+
+	return ret;
+}
+
+var pickWord = function() {
+	currentWord++;
+	if(currentWord >= words.length) {
+		currentWord = 0;
+	}
+
+	return words[currentWord];
+}
+
+var mixLetters = function(word) {
+	var lettersArr = [];
+	for(var idx = 0; idx < word.length; idx++) {
+		lettersArr.push(word.substr(idx, 1));
+	}
+	lettersArr = addChat(lettersArr);
+	var mixed = shuffle(lettersArr);
+	return mixed;
+};
+
+var addChat = function(mixed) {
+	var numToAdd = 10 - mixed.length;
+	var alphabetLen = alphabet.length;
+	for(var idx = 0; idx < numToAdd; idx++) {
+		var rad = parseInt(Math.random() * alphabetLen);
+		mixed.push(alphabet[rad]);
+	}
+	return mixed;
+}
+
+function shuffle(o){ //v1.0
+	for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+	return o;
+};
+
+var checkWord = function(word) {
+	return (word == words[currentWord]);
+}
 
 io.sockets.on("connection", function(socket){
-	
-	console.log("**********************************");
-	console.log("*****     NEW CONNECTION     *****");
-	console.log("**********************************");
-	console.log(socket);
-	console.log("**********************************");
-	console.log("**********************************");
-	console.log("**********************************");
-	
+	socketsList.push(socket.id);
+	if(first) {
+		first = false;
+		artist = socket.id;
+		artistIndex = 0;
+	}
+
+	socket.emit('handshake', {
+		id: socket.id,
+		artist: artist
+	});
+
+	socket.on('setNewArtist', function(){
+		var id = pickNextArtist();
+		io.sockets.emit('newArtist', id);
+	});
+
 	socket.on("setClick", function(data){
 		io.sockets.emit("pushClick", data);
 	});
-	
+
 	socket.on("setGameInfo", function(data){
 		io.sockets.emit("pushGameInfo", data);
+	});
+
+	socket.on("checkWord", function(data){
+		var done = checkWord(data);
+		var newWord = pickWord();
+		var mixed = mixLetters(newWord);
+		console.dir(mixed);
+		// if(done) {
+		// 	var newWord = pickWord();
+		// 	var mixed = mixLetters(newWord);
+		// 	io.sockets.emit("wordGuessed", {newArtist: socket.id, letters: mixed});
+		// 	socket.emit('artistWord', newWord);
+		// 	artist = socket.id;
+		// } else {
+		// 	io.sockets.emit("wordGuessed", false);
+		// }
 	});
 });
